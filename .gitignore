@@ -1,0 +1,33 @@
+## Core LaTeX auxiliary files
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.synctex.gz
+*.toc
+
+## Bibliography files
+*.bbl
+*.blg
+*.bib.bak
+
+## Build directories (if using tools like Texmaker or TeXstudio)
+build/
+out/
+
+## Output files (PDFs)
+# Most people ignore the PDF and regenerate it from source
+*.pdf
+
+## Other common extensions
+*.nav
+*.out
+*.snm
+*.vrb
+*.lof
+*.lot
+*.idx
+*.ind
+*.ilg
+*.bcf
+*.run.xml
