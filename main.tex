@@ -72,6 +72,28 @@ citecolor   =  greenish%Colour of citations
 \def\e{\mathrm{e}}
 \def\hp{\hat{p}}
 \def\E{\mathbb{E}}
+\def\eh{\hat{\mathbf{e}}}
+\def\et{\tilde{\mathbf{e}}}
+\def\a{\vec{a}}
+\def\b{\vec{b}}
+\def\c{\vec{c}}
+\def\v{\vec{v}}
+\def\p{\vec{p}}
+\def\q{\vec{q}}
+\def\p{\vec{a}}
+\def\q{\vec{b}}
+\def\d{\text{d}}
+\def\F{\mathbb{F}}
+\def\B{\mathbb{B}}
+\def\Z{\mathbb{Z}}
+\def\A{\mathbf{A}}
+\def\C{\mathbb{C}}
+\def\R{\mathbb{R}}
+\def\J{\mathcal{J}}
+\def\T{\dagger}
+\def\grad{\vec{\nabla}}
+\def\fh{\hat{f}}
+\def\e{\text{e}}
 \title{Schr\"odinger Bridge Problem}
 \author{}
 \date{}
@@ -115,7 +137,6 @@ the heat equation reduces to an amplitude equation,
 \frac{\d \hp(k, t)}{\d t} = -D k^2 \hp(k, t),
 \]
 for every $k$-th mode. This can be solved easily to get, $\hp(k, t) = \hp_o(k) \exp(-Dk^2t)$. The initial condition $p(z, 0) = \delta(z-x_o)$ gives $\hp_o(k) = \exp(ikx_o)$. The final solution is formally,
-
 \[
 p(x, t) =  \frac{1}{2\pi} \int_{-\infty}^{\infty} \e^{-Dk^2 t - ik(z-x_o)} \ \d k.
 \]
@@ -133,7 +154,15 @@ p(x, t) = \sqrt{\frac{\pi}{4Dt}}\, \e^{-(x - x_o - v_o t)^2/4 D t}.
 \]
 It is clear that the mean of the distribution, $\E[x] = (x_o+v_o t)$ while the variance,
 
+\begin{tcolorbox}[colback=greenish!20!white,colframe=white,arc=8pt,outer arc=8pt]
+    \textbf{\textsf{Properties of Gaussian function:}}\\[5pt]
+    Gaussian function/Normal distribuition has several nice properties making them amenable for a variety of analytical calculations. The function is defined as,
+    \[
+    g(x)={\frac{1}{{\sqrt {2\pi \sigma^2}}}}\exp \left[-{\frac {1}{2}}{\frac {(x-\mu )^{2}}{\sigma ^{2}}}\right].
+    \]
+    The mean of the function/distribution, $\E[x] = \mu$ and the variance,
 
+\end{tcolorbox}
 % Consider an active particle whose motion is described by
 % an overdamped Langevin equation
 % \begin{align*}
