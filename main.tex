@@ -94,6 +94,12 @@ citecolor   =  greenish%Colour of citations
 \def\grad{\vec{\nabla}}
 \def\fh{\hat{f}}
 \def\e{\text{e}}
+\def\N{\mathcal{N}}
+\def\var{\mathrm{Var}}
+\def\Z{\mathbb{Z}}
+\def\grad{\nabla}
+
+
 \title{Schr\"odinger Bridge Problem}
 \author{}
 \date{}
@@ -117,6 +123,27 @@ Consider several instances of the dynamics of this particle with prescribed init
     \label{eq:FPP}
 \end{equation}
 where $D(x, t) = \sigma^2(X_t, t)/2$.
+
+\begin{tcolorbox}[colback=gray!20!white,colframe=white,arc=8pt,outer arc=8pt]
+    \textbf{\textsf{Properties of Gaussian function:}}\\[5pt]
+    Gaussian function/Normal distribution has several nice properties making them amenable for a variety of analytical calculations. The function is defined as,
+    \[
+    g(x)={\frac{1}{{\sqrt {2\pi \sigma^2}}}}\exp \left[-{\frac {1}{2}}{\frac {(x-\mu )^{2}}{\sigma ^{2}}}\right].
+    \]
+    The mean of the function/distribution, $\E[X] = \mu$ and the variance, $\var [X] = \sigma^2$. Further, the normal distribution, often denoted by $\N(\mu, \sigma)$, has the following useful properties:\\
+
+    The moment generating function of a distribution is a powerful function with useful properties. It is a defined as, $G(t) = \E[\e^{tX}]$. This can be expanded as,
+    \[
+    G(t) = \sum_{k=-\infty}^{\infty} \E[X^k] \frac{t^k}{k!}.
+    \]
+    Using this definition, $G(t)$ of $\N(0, 1)$ is given by,
+    \[
+    G(t) = \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{\infty} \e^{tx} \e^{-x^2/2}\,\d x = \e^{t^2/2} \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{\infty} \e^{-(s-t)^2/2}\,\d x = \e^{t^2/2}.
+    \]
+    For a $\N(\mu, \sigma)$, the moment generating function is $G(t) = \e^{\mu t + \sigma^2t^2/2}$. The $n$-th moment of the distribution is $\E[X^n] = \d^n G(t)/\d t^n |_{t=0}$ and so we can easily see that $\E[X] = \mu$ and $\var[X] = \E[X^2] - \E[X]^2 = \sigma^2$.\\
+
+    For a normal distribution, all moments are functions of $\mu$ and $\sigma$. Since the normal distribution is a symmetric distribution about the mean, $\E[(X-\mu)^{2n+1}] = 0$ for $n \in \Z$. For even moments, we can use the definition of the moment generating function, $G(t)$ to find that, $\E[(X-\mu)^{2n}] = \sigma^{2n} (2n)!/(2^n n!)$.
+\end{tcolorbox}
 
 Let us consider a simple example to make this concrete. If drift velocity is a constant, $v(X_t, t) = v_o$ and the amplitude of noise is also a constant, $\sigma(X_t, t) = \sqrt{2D}$, then the SDE is known as the Ornstein-Uhlenbeck process: $\d X_t = v_o \ \d t + \sqrt{2D} \d W_t$. The corresponding FP equation is given by,
 \begin{equation}
@@ -152,17 +179,76 @@ In the original frame of reference, the solution reads,
 \[
 p(x, t) = \sqrt{\frac{\pi}{4Dt}}\, \e^{-(x - x_o - v_o t)^2/4 D t}.
 \]
-It is clear that the mean of the distribution, $\E[x] = (x_o+v_o t)$ while the variance,
+It is clear that the mean of the distribution, $\E[X] = (x_o+v_o t)$, which simply means that the distribution's mean gets advected with a constant speed, $v_o$. The variance can be seen to vary as, $\var(X) = 4Dt$, which tells us that the distribution gets wider with time at a rate $w \sim t^{1/2}$.
 
-\begin{tcolorbox}[colback=greenish!20!white,colframe=white,arc=8pt,outer arc=8pt]
-    \textbf{\textsf{Properties of Gaussian function:}}\\[5pt]
-    Gaussian function/Normal distribuition has several nice properties making them amenable for a variety of analytical calculations. The function is defined as,
+\section{Stochastic optimal control}
+
+The field of optimal control aims to drive the dynamics of systems towards trajectory that minimize a cost along the trajectory. In the presence of stochasticity in the system, the dynamics of the particle can be written as a SDE of the form,
+\[
+\d X_t = f(X_t, u, t) + \sqrt{2D}\d W_t.
+\]
+Here the drive/control variable is $u(t)$ and acts on the particle to minimize a cost,
+\[
+c(X, u) = \E \bigg[\int_0^T r(X, u, t)\,\d t \bigg],
+\]
+where $r(X, u, t)$ is the cost `density' along the trajectory. As we can see the dynamics of the particle we are interested in controlling is bounded in $t \in [0, T]$ and the cost function is minimized in an average sense. It is useful to define the cost-to-go function, $V(t, x)$ which is the optimized cost incurred from time $t$ to $T$. The cost-to-go function, also commonly known as the value function, can be written as,
+\[
+V(t, x) = \min_{u_{t:T}} \E \bigg[\int_t^T r(X_\tau, u, \tau)\,\d \tau \bigg].
+\]
+This equation can be expanded for a small time-interval $[t, t+\Delta t]$ as,
+\[
+V(t, x) = \min_{u} \mathbb{E} \left[ \int_t^{t+\Delta t} r(X_\tau, u, \tau) \d \tau + V(t+\Delta t, X_{t+\Delta t}) \right]
+\]
+For a small $\Delta t$, the integral is approximately $r(X, u, t)\Delta t$. To handle the stochastic term $X_{t+\Delta t}$, we apply Ito's Lemma to expand $V(t+\Delta t, X_{t+\Delta t})$ around $(t, X)$:
+\[
+V(t+\Delta t, X_{t+\Delta t}) \approx V(t, x) + \frac{\partial V}{\partial t}\Delta t + \nabla V \cdot \d X_t + D \nabla^2 V \Delta t
+\]
+Substituting $\d X_t = f(X_t, u, t) + \sqrt{2D}\d W_t$ for the dynamics and noting that $\E[\d W_t] = 0$, we get,
+\[
+\mathbb{E}[V(t+\Delta t, X_{t+\Delta t})] \approx V(t, x) + \left( \frac{\partial V}{\partial t} + f(x, u, t) \, \partial_x V + D \partial_x^2 V \right) \Delta t.
+\]
+Substituting this back into the optimality expression,
+\[
+V(t, x) = \min_{u} \left[ r(x, u, t)\Delta t + V(t, x) + \left( \frac{\partial V}{\partial t} + f(x, u, t) \, \partial_x V + D \partial_x^2 V \right) \Delta t \right].
+\]
+Subtracting $V(t, x)$ from both sides, dividing by $\Delta t$, and taking the limit $\Delta t \to 0$, we arrive at the Hamilton-Jacobi-Bellman (HJB) equation,
+\begin{equation}
+-\frac{\partial V}{\partial t} = \min_{u} \left[ r(x, u, t) + f(x, u, t) \partial_x V \right] + D \partial_x^2 V
+\label{eq:HJB}
+\end{equation}
+with the terminal condition $V(T, x) = 0$. Note that terms came out of the minimization operation above because $V(t,x)$ is not an explicit function of $u$ as it is evaluated after identifying the optimal $u$.
+
+\begin{tcolorbox}[colback=gray!20!white,colframe=white,arc=8pt,outer arc=8pt]
+    \textbf{\textsf{Particle in a potential with quadratic cost:}}\\[5pt]
+    Consider the case when the particle is under the influence of a potential with linear control. In this case, $f(x, u, t) = -\grad \phi + u$, with $\phi$ being the potential. Further, lets assume $r(x, u, t) = \alpha u^2/2$. The HJB equation in Eq.~\ref{eq:HJB} reduces to,
     \[
-    g(x)={\frac{1}{{\sqrt {2\pi \sigma^2}}}}\exp \left[-{\frac {1}{2}}{\frac {(x-\mu )^{2}}{\sigma ^{2}}}\right].
+    -\frac{\partial V}{\partial t} = \min_{u} \left[ \frac{\alpha u^2}{2} + (u-\nabla \phi) \cdot (\grad V) \right] + D \grad^2 V.
     \]
-    The mean of the function/distribution, $\E[x] = \mu$ and the variance,
+    The optimal controller $u^*$ minimizes the terms in the bracket and we can evaluate this exactly to get,
+    \[
+    u^* = - \frac{1}{\alpha} \grad V.
+    \]
+    Substitute this back into Eq.~\ref{eq:HJB}, we get
+    \[
+    \frac{\partial V}{\partial t} = \frac{(\grad V)^2}{2 \alpha} + (\nabla \phi) \cdot (\grad V) - D \grad^2 V.
+    \]
+    This has to be solved with final condition, $V(T,x) = 0$.
+
+    Consider now a quadratic potential, $\phi = kx^2/2$, then HJB equation reduces to,
+    \[
+    \partial_t V = (\partial_x V)^2/{(2 \alpha)} + kx (\partial_x V) - D \partial_x^2 V.
+    \]
+    We can rewrite the above equation, which is a non-linear negative diffusion equation in to regular diffusion by replacing $t \rightarrow (T-t)$ to get (the end condition then becomes $V(0, x) = 0$),
+    \[
+    \partial_t V = -(\partial_x V)^2/{(2 \alpha)} - kx (\partial_x V) + D \partial_x^2 V.
+    \]
+    In the infinite time limit, $T \rightarrow + \infty$, the above equation reduces to a ODE of the Riccati form,
+    \[
+    2 \alpha D V''(x) + -V'(x)^2 - 2\alpha kx V'(x) = 0.
+    \]
 
 \end{tcolorbox}
+
 % Consider an active particle whose motion is described by
 % an overdamped Langevin equation
 % \begin{align*}
