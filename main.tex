@@ -34,40 +34,6 @@ linkcolor    = magenta, %Colour of internal links
 citecolor   =  greenish%Colour of citations
 }
 
-%% Math defs
-\newcommand{\real}{{\mathbb{R}}}
-\newcommand{\complex}{{\mathbb{C}}}
-\newcommand{\realpositive}{{\mathbb{R}}_{>0}}
-\newcommand{\realnonnegative}{{\mathbb{R}}_{\ge 0}}
-\newcommand{\integernonnegative}{\mathbb{N}_0}
-\newcommand{\naturals}{\mathbb{N}}
-\newcommand{\ones}[1]{\mathbf{1}_{#1}}
-\newcommand{\Sc}{\mathcal{S}}
-\newcommand{\meas}[1]{|#1|}
-\newcommand{\Xsp}{\mathbb{X}}
-\newcommand{\Wsp}{\mathbb{W}}
-\newcommand{\Ysp}{\mathbb{Y}}
-\newcommand{\Vsp}{\mathbb{V}}
-\newcommand{\yvec}{\mathbf{y}}
-\newcommand{\crefrangeconjunction}{--}
-
-
-%% Math operators
-\newcommand{\dvol}{\operatorname{dvol}}
-\newcommand{\dd}{\operatorname{d}}
-\newcommand{\vol}{\operatorname{vol}}
-\newcommand{\diff}{\operatorname{d}}
-\newcommand{\hess}{\operatorname{Hess}}
-\newcommand{\supp}{\operatorname{supp}}
-\newcommand{\sgn}{\operatorname{sgn}}
-\newcommand{\id}{\operatorname{id}}
-\newcommand{\RMSE}{\operatorname{RMSE}}
-\newcommand{\longthmtitle}[1]{\mbox{}{\textit{(#1).}}}
-\newcommand{\Lip}{\operatorname{Lip}}
-
-\newcommand{\x}{\operatorname{x}}
-\newcommand{\ctrl}{\operatorname{u}}
-
 \def\d{\mathrm{d}}
 \def\e{\mathrm{e}}
 \def\hp{\hat{p}}
@@ -100,6 +66,7 @@ citecolor   =  greenish%Colour of citations
 \def\grad{\nabla}
 \def\P{\mathbb{P}}
 \def\D{\mathbb{D}}
+\def\phih{\hat{\phi}}
 
 
 \title{Schr\"odinger Bridge Problem}
@@ -121,7 +88,7 @@ Consider a Lagrangian particle undergoing arbitrary drift, $v(X_t, t)$ and diffu
 \end{equation}
 Consider several instances of the dynamics of this particle with prescribed initial conditions $X(0) = X_o$, then we can describe the ensemble of these instances via a probability distribution, $p(x, t)$ which gives the probability of finding a particle at a particular position $x$ at time $t$. The evolution of this probability density is given by the Fokker-Planck equation,
 \begin{equation}
-    \partial_t p(x, t) + \partial_x[v(x, t) p(x, t)] = \partial_x^2 (D(x, t) p(x, t)),
+    \partial_t p(x, t) + \grad\cdot[v(x, t) p(x, t)] = \grad^2 (D(x, t) p(x, t)),
     \label{eq:FPP}
 \end{equation}
 where $D(x, t) = \sigma^2(X_t, t)/2$.
@@ -149,7 +116,7 @@ where $D(x, t) = \sigma^2(X_t, t)/2$.
 
 Let us consider a simple example to make this concrete. If drift velocity is a constant, $v(X_t, t) = v_o$ and the amplitude of noise is also a constant, $\sigma(X_t, t) = \sqrt{2D}$, then the SDE is known as the Ornstein-Uhlenbeck process: $\d X_t = v_o \ \d t + \sqrt{2D} \d W_t$. The corresponding FP equation is given by,
 \begin{equation}
-    \partial_t p(x, t) + v_o\partial_x[p(x, t)] = D\partial_x^2 p(x, t).
+    \partial_t p(x, t) + v_o \cdot \grad p(x, t) = D\grad^2 p(x, t).
     \label{eq:OUFPP}
 \end{equation}
 Initialising a particle at a position, $X_{t=0} = X_o$ corresponds to initialising the PDE with initial condition, $p(x, 0) = \delta(x-x_o)$. There are several ways of solving this PDE, most convenient is by rewriting the PDE in transformed variable, $z = x - v_o t$ to get,
@@ -207,15 +174,15 @@ V(t+\Delta t, X_{t+\Delta t}) \approx V(t, x) + \frac{\partial V}{\partial t}\De
 \]
 Substituting $\d X_t = f(X_t, u, t) + \sqrt{2D}\d W_t$ for the dynamics and noting that $\E[\d W_t] = 0$, we get,
 \[
-\mathbb{E}[V(t+\Delta t, X_{t+\Delta t})] \approx V(t, x) + \left( \frac{\partial V}{\partial t} + f(x, u, t) \, \partial_x V + D \partial_x^2 V \right) \Delta t.
+\mathbb{E}[V(t+\Delta t, X_{t+\Delta t})] \approx V(t, x) + \left( \frac{\partial V}{\partial t} + f(x, u, t) \, \grad V + D \grad^2 V \right) \Delta t.
 \]
 Substituting this back into the optimality expression,
 \[
-V(t, x) = \min_{u} \left[ r(x, u, t)\Delta t + V(t, x) + \left( \frac{\partial V}{\partial t} + f(x, u, t) \, \partial_x V + D \partial_x^2 V \right) \Delta t \right].
+V(t, x) = \min_{u} \left[ r(x, u, t)\Delta t + V(t, x) + \left( \frac{\partial V}{\partial t} + f(x, u, t) \, \grad V + D \grad^2 V \right) \Delta t \right].
 \]
 Subtracting $V(t, x)$ from both sides, dividing by $\Delta t$, and taking the limit $\Delta t \to 0$, we arrive at the Hamilton-Jacobi-Bellman (HJB) equation,
 \begin{equation}
--\frac{\partial V}{\partial t} = \min_{u} \left[ r(x, u, t) + f(x, u, t) \partial_x V \right] + D \partial_x^2 V
+-\frac{\partial V}{\partial t} = \min_{u} \left[ r(x, u, t) + f(x, u, t) \grad V \right] + D \grad^2 V
 \label{eq:HJB}
 \end{equation}
 with the terminal condition $V(T, x) = 0$. Note that terms came out of the minimization operation above because $V(t,x)$ is not an explicit function of $u$ as it is evaluated after identifying the optimal $u$.
@@ -238,11 +205,11 @@ with the terminal condition $V(T, x) = 0$. Note that terms came out of the minim
 
     Consider now a quadratic potential, $\phi = kx^2/2$, then HJB equation reduces to,
     \[
-    \partial_t V = (\partial_x V)^2/{(2 \alpha)} + kx (\partial_x V) - D \partial_x^2 V.
+    \partial_t V = (\grad V)^2/{(2 \alpha)} + kx (\grad V) - D \grad^2 V.
     \]
     We can rewrite the above equation, which is a non-linear negative diffusion equation in to regular diffusion by replacing $t \rightarrow (T-t)$ to get (the end condition then becomes $V(0, x) = 0$),
     \[
-    \partial_t V = -(\partial_x V)^2/{(2 \alpha)} - kx (\partial_x V) + D \partial_x^2 V.
+    \partial_t V = -(\grad V)^2/{(2 \alpha)} - kx (\grad V) + D \grad^2 V.
     \]
     In the infinite time limit, $T \rightarrow + \infty$, the above equation reduces to a ODE of the Riccati form,
     \[
@@ -271,355 +238,47 @@ and an unknown process,
 \]
 where $u(x, t)$ is the unknown controller. The evolution of $Q$ is simply the diffusion equation,
 \begin{equation}
-    \partial_t q(x, t) = D \partial_x^2 q(x, t),
+    \partial_t q(x, t) = D \grad^2 q(x, t),
     \label{eq:DiffFP}
 \end{equation}
 whereas the evolution of $P$ is given by the Fokker-Planck equation,
 \begin{equation}
-    \partial_t p(x, t) + \partial_x[u(x, t) p(x, t)] = D \partial_x^2 p(x, t).
+    \partial_t p(x, t) + \grad \cdot [u(x, t) p(x, t)] = D \grad^2 p(x, t).
     \label{eq:SBPFP}
 \end{equation}
 The goal is to identify $u(x, t)$ that minimizes the `distance' between $p(x)$ and $q(x)$. Now, using Girsanov's theorem (which we do not derive here), we can show that minimizing $\D_{\rm KL}$ is the same as minimizing the quadratic cost associated with the controller. We can write then the SBP as,
 \begin{align}
     % c(x, u) =& \,\E\bigg[ \frac{1}{4D} \int_0^T u^2(x, t)\,\d t \bigg], \\
-    V(t, x) =& \min_u\,\E\bigg[ \frac{1}{4D} \int_t^T |u(x, t)|^2\,\d t \bigg], \\
+    V(t, x) =& \min_u\,\E\bigg[ \frac{1}{4D} \int_t^T |u(x, \tau)|^2\,\d \tau \bigg], \\
     u^*(x, t)=&\,\text{arg}\min_u\,V(t, x),\\
-    \text{s.t.}\quad\partial_t p(x, t) + \partial_x[u(x, t) p(x, t)] =&\,D \partial_x^2 p(x, t).
+    \text{s.t.}\quad\partial_t p(x, t) + \grad[u(x, t) p(x, t)] =&\,D \grad^2 p(x, t).
 \end{align}
 The HJB equation corresponding to this problem is,
 \[
     -\frac{\partial V}{\partial t} = \min_{u} \left[ \frac{|u|^2}{4D} + u \cdot (\grad V) \right] + D \grad^2 V.
 \]
-We can immediately see that the control satisfies,
+We can immediately see that the optimal control, $u^*(x, t)$ satisfies,
+\begin{equation}
+    u^* = -2D \grad V(t, x),
+\end{equation}
+and the evolution of the value function by substituting the optimal control $u^*$ is,
+\begin{equation}
+    \frac{\partial V}{\partial t} - D |\grad V|^2 + D \grad^2 V = 0. \label{eq:VFin}
+\end{equation}
+Equation~\ref{eq:SBPFP} becomes,
+\begin{equation}
+\partial_t p - 2D \grad \cdot [ (\grad V) p] = D \grad^2 p. \label{eq:FPFin}
+\end{equation}
+Using Cole-Hopf transformation $V(t, x) = - \log \phi(x, t)$, we can rewrite Eq.~\ref{eq:VFin} as,
 \[
-    u^*(x, t) = -2D \grad V(x, t),
+\partial_t \phi = - D \nabla^2 \phi,
 \]
-and the evolution equation for the value function becomes,
+and $u^* = 2 D \grad \log \phi$.
+We have now simplified the equation for value function to a heat equation which we know how to solve. Note that the diffusion coefficient is negative here but since this equation has to be solved backwards in time, there is no divergence issue. What remains to be done is to simplify the evolution of the density, $p(x, t)$ in Eq.~\ref{eq:FPFin}. Here we use the Schr\"odinger factorization or Born rule to write $p(x, t) = \phi \phih$ in Eq.~\ref{eq:FPFin} to get,
 \[
-    \frac{\partial V}{\partial t} + D |\grad V|^2 + D \grad^2 V = 0.
+\partial_t \phih = D \nabla^2 \phih.
 \]
-
-% Consider an active particle whose motion is described by
-% an overdamped Langevin equation
-% \begin{align*}
-%     \eta \dot{\x}(t) =& -\nabla \Psi(\x(t)) + \ctrl(t) + \sqrt{2D} \xi(t)
-% \end{align*}
-% where $\eta$ and $D$ are the damping and 
-% diffusion constants respectively,
-% $\Psi$ is a potential,
-% $\ctrl$ is a control input (a driving force)
-% and $\xi(t)$ is a delta-correlated, stationary Gaussian process.
-% We set $\eta =1$ and express the dynamics (in It$\hat{\rm o}$ form) as 
-% $d\x(t) = -\nabla \Psi(\x(t)) dt + \ctrl(t) dt + \sqrt{2D} dB_t$
-% where $B_t$ is a standard Brownian motion. \\
-
-% \noindent We are interested in steering the particle
-% for a finite duration of time $[0,T]$
-% across the landscape described by $\Psi$
-% towards regions of low $\Psi$
-% (e.g., $\Psi$ is a height function
-% over the $(x,y)$-place and the landscape $(x,y,\Psi(x,y))$
-% consists of peaks and valleys, and we want to 
-% steer the particle towards the lowest valley. 
-% Note that although the particle naturally tends to
-% go downhill due to the force $-\nabla \Psi$
-% even in the absence of the driving input $\ctrl$,
-% the landscape $\Psi$ may be non-convex 
-% and the particle may be trapped in an undesirable 
-% valley, i.e., region of attraction of a local minimum of $\Psi$).
-% Furthermore, steering the particle incurs a cost
-% (which we assume to be quadratic in $\ctrl$),
-% and we thereby seek to minimize (on average) the following cost
-% \begin{align*}
-%     \frac{\gamma}{2} \int_0^T \ctrl^2(t) dt + \Psi(\x(T)).
-% \end{align*}
-% Note that there is a likely trade-off between
-% expending steering effort (first term) and 
-% the potential reward of reaching low values of $\Psi$
-% (second term). \\
-
-% \noindent In order to formulate the problem more precisely,
-% let $J(t, \x, \ctrl_{t:T})$ be the average cost 
-% from time $t$ when the particle is known to be at $\x$ 
-% at time $t$, under the control input 
-% $\ctrl_{t:T}$ delivered over the remaining time $[t,T]$
-% \begin{align} \label{eq:expected_cost}
-%     J(t, \x, \ctrl_{t:T}) = \mathbb{E} \left[ \left. \frac{\gamma}{2} \int_t^T \ctrl^2(t') dt' + \Psi(\x(T)) ~\right|~  \x(t) = \x \right]
-% \end{align}
-% where the expectation $\mathbb{E}$ is taken over all trajectories
-% generated by the dynamics of the particle under the control $\ctrl$
-% satisfying the condition $\x(t) = \x$. The goal is then to minimize
-% $J(t, \x, \ctrl_{t:T})$ with an appropriate choice of the control $\ctrl_{t:T}$ 
-% \begin{align*}
-%    V(t, \x) = \min_{\ctrl_{t:T}} J(t, \x, \ctrl_{t:T}).
-% \end{align*}
-% The function $V$ above is typically called the value function.
-
-% \section{Deterministic optimal control ($D=0$ case)}
-% When $D=0$, the equation of motion of the particle is given by
-% $\dot{\x}(t) = -\nabla \Psi(\x(t)) + \ctrl(t)$. The value function then satisfies
-% \begin{align} \label{eq:value_fnc}
-% \begin{aligned}
-%     V(t,\x) &= \min_{\ctrl_{t:T}} \left \lbrace \frac{\gamma}{2} \int_t^T \ctrl^2(t') dt' + \Psi(\x(T)) \right \rbrace \\
-%     &= \min_{\ctrl_{t:T}} \left \lbrace \frac{\gamma}{2} \ctrl^2(t) dt + \int_{t+dt}^T \ctrl^2(t') dt' + \Psi(\x(T)) \right \rbrace \\
-%     &= \min_{\ctrl(t)} \min_{\ctrl_{t+dt:T}} \left \lbrace \frac{\gamma}{2} \ctrl^2(t) dt + \int_{t+dt}^T \ctrl^2(t') dt' + \Psi(\x(T)) \right \rbrace \\
-%     &= \min_{\ctrl(t)} \left[ \frac{\gamma}{2} \ctrl^2(t) dt + \min_{\ctrl_{t+dt:T}} \left \lbrace \int_{t+dt}^T \ctrl^2(t') dt' + \Psi(\x(T)) \right \rbrace \right]
-% \end{aligned}
-% \end{align}
-% where we first merely decompose the cost incurred over the time horizon $[t,T]$
-% into the cost at time $t$ and the cost over $[t+dt, T]$,
-% which allows us to express the original minimization problem as a 
-% nested minimization. The term $\min_{\ctrl_{t+dt:T}} \left \lbrace \int_{t+dt}^T \ctrl^2(t') dt' + \Psi(\x(T)) \right \rbrace$ can be seen to have the
-% same structure as $V$ but with the time argument $t+dt$ and a possibly
-% different position argument. Since under the control input $\ctrl(t)$ at time $t$ 
-% the particle moves to a new position $\x(t+dt) = \x - \nabla \Psi(\x) dt + \ctrl(t) dt$, we can write
-% \begin{align*}  
-%     V(t, \x) = \min_{v} \left[ \frac{\gamma}{2} v^2 dt + V \left(t+dt, \x -\nabla \Psi(\x) dt + v dt \right) \right]
-% \end{align*}
-% and we obtain (by Taylor expansion to first order in $dt$)
-% \begin{align*}
-%     0 &= \min_{v} \left[ \frac{\gamma}{2} v^2 dt + V \left(t+dt, \x -\nabla \Psi(\x) dt + v dt \right) - V(t,\x) \right] \\
-%     &= \min_{v} \left[ \frac{\gamma}{2} v^2 dt + \frac{\partial V}{\partial t} dt - \nabla V \cdot \nabla \Psi dt + \nabla V \cdot v dt \right] \\
-%     &= \frac{\partial V}{\partial t} - \nabla V \cdot \nabla \Psi + \min_{v} \left \lbrace \frac{\gamma}{2} v^2 + \nabla V \cdot v \right \rbrace
-% \end{align*}
-% The minimizing $v$ above is given by $v^* = - \frac{1}{\gamma} \nabla V$
-% and we obtain
-% \begin{align} \label{eq:HJB}
-%     \frac{\partial V}{\partial t} - \nabla V \cdot \nabla \Psi - \frac{1}{2\gamma} \left| \nabla V \right|^2 = 0.
-% \end{align}
-% Note that for time $t=T$, we get the boundary condition $V(T, \x) = \Psi(\x)$ (note from \eqref{eq:value_fnc} that the steering cost evaluates to zero, since the limits of the integral are equal). The above PDE is called the \emph{Hamilton-Jacobi-Bellman} (HJB) equation, and is solved backwards in time. \\
-
-% \noindent In principle, the above approach involves solving the HJB PDE 
-% globally in space and time, in order to implement the optimal control 
-% $\ctrl^*(t, \x) = - \frac{1}{\gamma} \nabla V(t, \x)$ locally at $(t, \x)$.
-% An alternative is to solve the optimal control problem at the level of
-% individual trajectories, an approach we now outline below. \\
-
-% \noindent Recall that the minimization in \eqref{eq:value_fnc},
-% is a constrained minimization problem subject to the dynamics
-% of the particle (starting from $t=0$ with the particle at $\x$)
-% \begin{align*}
-%     \min_{\ctrl_{0:T}} ~ \frac{\gamma}{2} \int_0^T \ctrl^2(t) dt + \Psi(\x(T))
-%     \quad \text{subject~to} \quad  \dot{\x}(t) = -\nabla \Psi(\x(t)) + \ctrl(t),
-%     ~ \x(0) = \x.
-% \end{align*}
-% The Lagrangian for the above problem, with multiplier $\lambda$
-% for the ODE constraint, is given by
-% \begin{align*}
-%     \mathcal{L} = \frac{\gamma}{2} \int_0^T \ctrl^2(t) dt
-%                     - \int_0^T \lambda(t) \cdot \left[ \dot{\x}(t) + \nabla \Psi(\x(t)) - \ctrl(t) \right] dt  + \Psi(\x(T))
-% \end{align*}
-% This allows us to express the original constrained 
-% minimization problem as the nested, unconstrained optimization
-% problem below
-% \begin{align*}
-%     \min_{\ctrl_{0:T}} ~\min_{\x_{0:T}} ~\max_{\lambda_{0:T}} ~\mathcal{L} (\x_{0:T}, \ctrl_{0:T}, \lambda_{0:T})    
-% \end{align*}
-% The removal of the ODE constraint makes $\x_{0:T}$ 
-% a free trajectory (not subject to the dynamics 
-% $\dot{\x}(t) = -\nabla \Psi(\x(t)) + \ctrl(t)$)
-% in the Lagrangian.
-% In first maximizing with respect to $\lambda_{0:T}$,
-% the Lagrangian $\mathcal{L}$ evaluates to $+\infty$
-% if the coefficient of $\lambda$ in the integrand is non-zero 
-% at any time, and is zero otherwise.
-% By nesting this maximization within the minimization
-% with respect to $\x_{0:T}$, we force the minimization
-% to select the latter condition by setting the
-% coefficient of $\lambda$ in the integrand to $0$,
-% which is a mere restatement of the ODE constraint
-% and the $\min-\max$ optimization retrieves the
-% original minimization problem in effect.
-% The solution to the optimal control problem 
-% is necessarily a critical point of the Lagrangian $\mathcal{L}$,
-% given by (calculus of variations)
-% \begin{align} \label{eq:pontryagin}
-% \begin{aligned}
-%     \dot{\x}^*(t) &= -\nabla \Psi(\x^*(t)) + \ctrl^*(t), \qquad \x^*(0) = \x \\
-%     \dot{\lambda}^*(t) &= \nabla^2 \Psi(\x^*(t)) \lambda^*(t), \qquad \quad ~\lambda^*(T) = \nabla \Psi(\x^*(T)) \\
-%     \ctrl^*(t) &= - \frac{1}{\gamma} \lambda^*(t)
-% \end{aligned}
-% \end{align}
-% The final equation for the optimal control is
-% obtained from minimization with respect to $\ctrl$
-% in the Lagrangian optimization.
-% We can now construct a function $\mathcal{H}
-%  = \frac{\gamma}{2} \ctrl^2 + \lambda \cdot \left( -\nabla \Psi + \ctrl \right)$
-% to rewrite the optimal solution as 
-% $\dot{\x}^*(t) = \nabla_\lambda \mathcal{H}(\x^*(t), \ctrl^*(t), \lambda^*(t))$,
-% $\dot{\lambda}^*(t) = - \nabla \mathcal{H}(\x^*(t), \ctrl^*(t), \lambda^*(t))$
-% and $\ctrl^*(t) = \arg \min_v \mathcal{H}(\x^*(t), v, \lambda^*(t))$.
-% Note that the system $(\x^*(t), \lambda^*(t))$ has the structure of
-% a Hamiltonian dynamics (with $\mathcal{H}$ as the Hamiltonian)
-% and the optimal control minimizes the Hamiltonian at every point along the
-% optimal trajectory. This is the well-known \emph{Pontryagin Minimum Principle}. \\
-
-% \noindent To highlight the connection between the Hamilton-Jacobi-Bellman 
-% and Pontryagin formulations of the optimal control problem,
-% we differentiate the HJB equation \eqref{eq:HJB} with respect to $\x$,
-% to get
-% \begin{align*}
-%     \frac{\partial}{\partial t} \nabla V  
-%             + \nabla^2 V \left( - \nabla \Psi - \frac{1}{\gamma} \nabla V \right)
-%             - \nabla^2 \Psi \nabla V = 0 .
-% \end{align*}
-% The optimal trajectory $\x^*(t)$ 
-% satisfies $\dot{\x}^*(t) = - \nabla \Psi(\x^*(t)) + \ctrl^*(t)
-% = - \nabla \Psi(\x^*(t)) - \frac{1}{\gamma} \nabla V(t, \x^*(t))$,
-% and we see that the sum of the first two terms in the PDE above
-% is merely the derivative of $\nabla V$ along the optimal trajectory, i.e.,
-% \begin{align*}
-%     \frac{D}{D t} \nabla V (t, \x^*(t)) - \nabla^2 \Psi(\x^*(t)) \nabla V(t, \x^*(t)) = 0 .
-% \end{align*}
-% By identifying $\lambda^*(t) = \nabla V(t, \x^*(t))$ in the equation above,
-% we get $\dot{\lambda}^*(t) = \nabla^2 \Psi(\x^*(t)) \lambda^*(t)$
-% and the boundary condition $\lambda^*(T) = \nabla V(T, \x^*(T)) = \nabla \Psi(\x^*(T))$ (again from the boundary condition of \eqref{eq:HJB}),
-% thereby retrieving the Pontryagin formulation \eqref{eq:pontryagin}.
-% This allows us to interpret the HJB equation as the Eulerian formulation
-% of optimal control and Pontryagin as the corresponding Lagrangian formulation
-% (in the terminology of fluid mechanics).
-
-% \section{Stochastic Optimal Control}
-% In the stochastic case, we only develop the HJB formalism here.
-% Recall the average control cost \eqref{eq:expected_cost}
-% for the stochastic control problem.
-% Following the same procedure as in the deterministic case,
-% we see that the value function satisfies
-% \begin{align*}
-%     V(t,x) = \min_v \left \lbrace \frac{\gamma}{2} v^2 dt + \mathbb{E}\left[ V(t+dt, \x -\nabla \Psi(\x(t)) dt + \ctrl(t) dt + \sqrt{2D} dB_t ) \right] \right \rbrace
-% \end{align*}
-% and we obtain (by Taylor expansion to first order in $dt$)
-% \begin{align*}
-%     0 &= \min_v \left \lbrace \frac{\gamma}{2} v^2 dt 
-%             +  \frac{\partial V}{\partial t} dt 
-%                 -  \nabla V \cdot \nabla \Psi dt + \nabla V \cdot v dt + D \Delta V dt \right \rbrace \\
-%     &= \frac{\partial V}{\partial t} + D \Delta V  -  \nabla V \cdot \nabla \Psi
-%         + \min_v \left \lbrace \frac{\gamma}{2} v^2  + \nabla V \cdot v \right \rbrace.
-% \end{align*}
-% With the minimizer $v^* = - \frac{1}{\gamma} \nabla V$ above, we get
-% \begin{align} \label{eq:stochastic_HJB}
-%     \frac{\partial V}{\partial t} + D \Delta V  -  \nabla V \cdot \nabla \Psi - \frac{1}{2\gamma} \left| \nabla V \right|^2 = 0
-% \end{align}
-% and the boundary condition $V(T,\x) = \Psi(\x)$.
-% Note that we recover the deterministic HJB equation \eqref{eq:HJB} 
-% when $D=0$. Furthermore, under the transform $V(t,\x) = - \frac{1}{\beta} \log \varphi (t, \x)$
-% (for some $\beta > 0$)
-% the HJB equation \eqref{eq:stochastic_HJB} yields
-% \begin{align*}
-%     \frac{\partial \varphi}{\partial t} + D \Delta \varphi -  \nabla \varphi \cdot \nabla \Psi 
-%             - \left( D - \frac{1}{2\gamma \beta}  \right) \frac{1}{\varphi} \left| \nabla \varphi \right|^2 = 0
-% \end{align*}
-% We now impose an Einstein relation $D = \frac{1}{2\gamma \beta}$
-% to reduce the above to a parabolic equation
-% \begin{align*}
-%     \frac{\partial \varphi}{\partial t} + D \Delta \varphi -  \nabla \varphi \cdot \nabla \Psi  = 0
-% \end{align*}
-% and the boundary condition $\varphi(t, \x) = e^{-\beta \Psi(\x)}$,
-% the solution to which can be obtained as a path integral
-% by applying the Feynman-Kac formula
-% \begin{align*}
-%     \varphi(t, \x) = \mathbb{E} \left[ \left. e^{-\beta \Psi(\x(T))} ~\right|~  \x(t) = \x \right]
-% \end{align*}
-% where the expectation above is taken with respect to paths generated by
-% the uncontrolled dynamics $d\x(t') = -\nabla \Psi(\x(t')) dt' + \sqrt{2D} dB_{t'}$
-% satisfying the condition $\x(t) = \x$. We then obtain the 
-% value function as
-% \begin{align*}
-%     V(t,\x) = - \frac{1}{\beta} \log \left( \mathbb{E} \left[ \left. e^{-\beta \Psi(\x(T))} ~\right|~  \x(t) = \x \right] \right)
-% \end{align*}
-% and the optimal control $\ctrl^*(t, \x) = - \frac{1}{\gamma} \nabla V(t, \x)$.
-% The value function of the stochastic optimal control problem
-% takes the form of a free energy wherein the (path integral) 
-% partition function corresponds to a Boltzmann distribution
-% over paths generated by the uncontrolled dynamics
-% with the weight factor $e^{-\beta \Psi(\x(T))}$
-% obtained from the cost of an uncontrolled path $\Psi(\x(T))$
-% (note from \eqref{eq:expected_cost} that the uncontrolled dynamics
-% only incurs the terminal cost $\Psi(\x(T))$).
-% The interesting fact here is that the 
-% value function for the optimal control can be
-% computed entirely from the uncontrolled dynamics
-% (we note that we have shown this property only 
-% when the control $\ctrl$ enters linearly in the dynamics
-% and the cost is quadratic in $\ctrl$).
-
-% \section{Optimal control as Bayesian inference}
-% We have seen that the value function $V(t,\x)$ satisfies
-% \begin{align} \label{eq:value_fnc_diff_forms}
-% \begin{aligned}
-%     V(t, \x) &= \min_{u_{t:T}}~ \mathbb{E}_{\mathbb{Q}} \left[ \left. \frac{\gamma}{2} \int_t^T \ctrl^2(t') dt' + \Psi(\x(T)) ~\right|~  \x(t) = \x \right] \\
-%     &= - \frac{1}{\beta} \log \left( \mathbb{E}_{\mathbb{P}} \left[ \left. e^{-\beta \Psi(\x(T))} ~\right|~  \x(t) = \x \right] \right)
-% \end{aligned}
-% \end{align} 
-% where $\mathbb{P}$ is the probability distribution on the
-% space of paths generated by the uncontrolled dynamics,
-% whereas $\mathbb{Q}$ is the the probability distribution on the
-% space of paths generated by the dynamics under the control
-% $u_{t:T}$. \\
-
-% \noindent Let $\frac{d\mathbb{P}}{d\mathbb{Q}} \sim e^{-\beta \frac{\gamma}{2} \int_t^T \ctrl^2(t') dt'}$ be the Radon-Nikodym derivative (informally, the ratio of probability densities of the
-% distributions $P$ and $Q$), upto a normalizing factor (which we will assume to be $1$ here).
-% We then get
-% \begin{align} \label{eq:value_fnc_jensen}
-% \begin{aligned}
-%     V(t, \x) &= - \frac{1}{\beta} \log \left( \mathbb{E}_{\mathbb{P}} \left[ \left. e^{-\beta \Psi(\x(T))} ~\right|~  \x(t) = \x \right] \right) \\
-%     &= - \frac{1}{\beta} \log \left( \mathbb{E}_{\mathbb{Q}} \left[ \left. e^{-\beta \Psi(\x(T))} \frac{d\mathbb{P}}{d\mathbb{Q}} ~\right|~  \x(t) = \x \right] \right) \\
-%     &= - \frac{1}{\beta} \log \left( \mathbb{E}_{\mathbb{Q}} \left[ \left. e^{-\beta \left(\frac{\gamma}{2} \int_t^T \ctrl^2(t') dt' + \Psi(\x(T)) \right)} ~\right|~  \x(t) = \x \right] \right) \\
-%     &\leq - \frac{1}{\beta}  \mathbb{E}_{\mathbb{Q}} \left[ \log \left( \left. e^{-\beta \left(\frac{\gamma}{2} \int_t^T \ctrl^2(t') dt' + \Psi(\x(T)) \right)} \right) ~\right|~  \x(t) = \x \right]  \\
-%     &= \mathbb{E}_{\mathbb{Q}} \left[  \left. \left(\frac{\gamma}{2} \int_t^T \ctrl^2(t') + \Psi(\x(T)) \right)  ~\right|~  \x(t) = \x \right]
-% \end{aligned}
-% \end{align}
-% where the inequality above is obtained from an application of Jensen's inequality.
-% From the third equality above, we get
-% \begin{align*}
-%     e^{-\beta V(t,x)} = \mathbb{E}_{\mathbb{Q}} \left[ \left. e^{-\beta \left(\frac{\gamma}{2} \int_t^T \ctrl^2(t') dt' + \Psi(\x(T)) \right)} ~\right|~  \x(t) = \x \right]
-% \end{align*}
-% for any distribution $\mathbb{Q}$ of paths generated by 
-% the controlled dynamics (with control $\ctrl$). 
-% In particular, for any control $\ctrl$ that steers the particle
-% from $\x$ at time $t=0$ to an $x^*$ at time $T$ 
-% that satisfies $\Psi(x^*) = 0$, we get
-% \begin{align*}
-%      e^{-\beta (V(0,x) - V(0,x^*))} = \mathbb{E}_{\mathbb{Q}} \left[ \left. e^{-\beta \frac{\gamma}{2} \int_t^T \ctrl^2(t') dt' } ~\right|~  \x(0) = \x \right]
-% \end{align*}
-% We note that $\Delta V = V(0,x) - V(0,x^*)$ is the difference in free energy between states $x$ and $x^*$ and $W = \frac{\gamma}{2} \int_t^T \ctrl^2(t') dt'$ is the work done to steer the particle from $x$
-% to $x^*$, and we obtain the well-known \textit{Jarzynski equality}
-% \begin{align} \label{eq:Jarzynski}
-%     e^{-\beta \Delta V} = \mathbb{E} \left[ e^{-\beta W} \right].
-% \end{align}
-% We now return to~\eqref{eq:value_fnc_jensen} 
-% where we note from \eqref{eq:value_fnc_diff_forms} 
-% that when we minimize the expectation on the final equality in~\eqref{eq:value_fnc_jensen} with respect to $\ctrl_{t:T}$ (or equivalently with respect to $\mathbb{Q}$,
-% since the control $\ctrl_{t:T}$ induces the probability distribution $\mathbb{Q}$,
-% and vice versa) we retrieve $V(t,\x)$ and the inequality becomes an equality.
-% Therefore, we get
-% \begin{align*}
-%     V(t, \x) &= \min_{\mathbb{Q}} - \frac{1}{\beta}  \mathbb{E}_{\mathbb{Q}} \left[ \log \left( \left. e^{-\beta \left(\frac{\gamma}{2} \int_t^T \ctrl^2(t') + \Psi(\x(T)) \right)} \right) ~\right|~  \x(t) = \x \right] \\
-%     &= \min_{\mathbb{Q}} - \frac{1}{\beta}  \mathbb{E}_{\mathbb{Q}} \left[ \log \left( \left. e^{-\beta \Psi(\x(T))} \frac{d\mathbb{P}}{d\mathbb{Q}} \right) ~\right|~  \x(t) = \x \right] \\
-%     &= \min_{\mathbb{Q}} ~\mathbb{E}_{\mathbb{Q}}[\Psi(\x(T)] - \frac{1}{\beta} \mathbb{E}_{\mathbb{Q}} \left[ \log \left( \frac{d\mathbb{P}}{d\mathbb{Q}} \right) \right] \\
-%     &= \min_{\mathbb{Q}} ~\underbrace{\mathbb{E}_{\mathbb{Q}}[\Psi(\x(T)]}_{\rm Average~terminal~cost} + \frac{1}{\beta} \underbrace{H(\mathbb{Q}|\mathbb{P})}_{\rm Relative~entropy}
-%  \end{align*}
-% The optimal control (minimizing $\mathbb{Q}$ above)
-% minimizes a weighted combination of the KL-divergence (or relative entropy)
-% to the uncontrolled distribution $\mathbb{P}$
-% and the expected terminal cost. We note that the control
-% cost $\frac{\gamma}{2} \int_t^T \ctrl^2(t') dt'$ 
-% is given by the KL-divergence of $\mathbb{Q}$ to $\mathbb{P}$,
-% encoded as the deviation from the uncontrolled distribution.
-% In Bayesian terms, the uncontrolled distribution
-% $\mathbb{P}$ is the prior, the optimal controlled distribution $\mathbb{Q}^*$
-% is obtained as the posterior according to Bayes rule (solving for $\mathbb{Q}^*$
-% above)
-% \begin{align*}
-%     d\mathbb{Q}^* = \frac{e^{-\beta \Psi(\x(T))} d\mathbb{P}}{\mathbb{E}_{\mathbb{P}}\left[ e^{-\beta \Psi(\x(T))} \right]}
-% \end{align*}
-
-% \nocite{RS:94, RS:86, HK:05, ET-ET:12, MD-SG:11, ET:09, CJ:97}
 
 \end{singlespace}
-
-\bibliographystyle{unsrt}
-\bibliography{references}
-
 \end{document}
 
