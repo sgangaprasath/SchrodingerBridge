@@ -98,6 +98,8 @@ citecolor   =  greenish%Colour of citations
 \def\var{\mathrm{Var}}
 \def\Z{\mathbb{Z}}
 \def\grad{\nabla}
+\def\P{\mathbb{P}}
+\def\D{\mathbb{D}}
 
 
 \title{Schr\"odinger Bridge Problem}
@@ -125,7 +127,7 @@ Consider several instances of the dynamics of this particle with prescribed init
 where $D(x, t) = \sigma^2(X_t, t)/2$.
 
 \begin{tcolorbox}[colback=gray!20!white,colframe=white,arc=8pt,outer arc=8pt]
-    \textbf{\textsf{Properties of Gaussian function:}}\\[5pt]
+    \textbf{\textsf{Properties of Gaussian/Normal distribution}}\\[5pt]
     Gaussian function/Normal distribution has several nice properties making them amenable for a variety of analytical calculations. The function is defined as,
     \[
     g(x)={\frac{1}{{\sqrt {2\pi \sigma^2}}}}\exp \left[-{\frac {1}{2}}{\frac {(x-\mu )^{2}}{\sigma ^{2}}}\right].
@@ -249,7 +251,53 @@ with the terminal condition $V(T, x) = 0$. Note that terms came out of the minim
 \end{tcolorbox}
 
 \section{Schr\"odinger bridge problem}
-Schr\"odinger in 1931 was interested
+Schr\"odinger in 1931 was interested in the arrow of time and understanding the connections between classical and quantum diffusion. He proposed the following problem: consider I make a measurement of the state of a gas at $t_0$ and make a measurement again at $t_1$, what is the most likely path that the gas took to reach the state at $t_1$ from $t_0$. This he proposed to solve assuming that he knows gases undergo diffusion.
+
+The Schr\"odinger Bridge Problem (SBP) can be phrased as a minimization problem where the goal is to identify the stochastic process that minimizes the difference between a proposed state and the diffused state of the gas constrained by the measurements at $t_0$ and $t_1$. This can be written in formal notation as,
+\[
+\min_{\P_0=p_0, \P_1=p_1} \D_{\rm KL} (\P_t||X_t),
+\]
+where $\P_t$ is the distribution of the proposed stochastic process at $t$ and $Y_t$ is diffusion motion following $\d Y_t = \sqrt{2D} \d W_t$, while $p_{0, 1}$ are the initial and final measurements. $\D_{\rm KL}(P||Q)$ is the Kullback-Leibler (KL) divergence which is a measure of how much an approximating probability distribution $Q(x)$ is different from a true probability distribution $P(x)$. In simple terms, it is a measure of distance between two distributions $P(x), Q(x)$ (there are caveats to this). This is defined as,
+\[
+\D_{\text{KL}}(P\parallel Q)= \int P(x)\,\log {\frac {P(x)}{Q(x)}}\,\d x.
+\]
+In the lagrangian sense, the SBP becomes a known diffusion process $Q$ whose stochastic dynamics is,
+\[
+\d Y_t = \sqrt{2D}\,\d W_t,
+\]
+and an unknown process,
+\[
+\d X_t = u(X_t, t)\,\d t + \sqrt{2D}\,\d W_t,
+\]
+where $u(x, t)$ is the unknown controller. The evolution of $Q$ is simply the diffusion equation,
+\begin{equation}
+    \partial_t q(x, t) = D \partial_x^2 q(x, t),
+    \label{eq:DiffFP}
+\end{equation}
+whereas the evolution of $P$ is given by the Fokker-Planck equation,
+\begin{equation}
+    \partial_t p(x, t) + \partial_x[u(x, t) p(x, t)] = D \partial_x^2 p(x, t).
+    \label{eq:SBPFP}
+\end{equation}
+The goal is to identify $u(x, t)$ that minimizes the `distance' between $p(x)$ and $q(x)$. Now, using Girsanov's theorem (which we do not derive here), we can show that minimizing $\D_{\rm KL}$ is the same as minimizing the quadratic cost associated with the controller. We can write then the SBP as,
+\begin{align}
+    % c(x, u) =& \,\E\bigg[ \frac{1}{4D} \int_0^T u^2(x, t)\,\d t \bigg], \\
+    V(t, x) =& \min_u\,\E\bigg[ \frac{1}{4D} \int_t^T |u(x, t)|^2\,\d t \bigg], \\
+    u^*(x, t)=&\,\text{arg}\min_u\,V(t, x),\\
+    \text{s.t.}\quad\partial_t p(x, t) + \partial_x[u(x, t) p(x, t)] =&\,D \partial_x^2 p(x, t).
+\end{align}
+The HJB equation corresponding to this problem is,
+\[
+    -\frac{\partial V}{\partial t} = \min_{u} \left[ \frac{|u|^2}{4D} + u \cdot (\grad V) \right] + D \grad^2 V.
+\]
+We can immediately see that the control satisfies,
+\[
+    u^*(x, t) = -2D \grad V(x, t),
+\]
+and the evolution equation for the value function becomes,
+\[
+    \frac{\partial V}{\partial t} + D |\grad V|^2 + D \grad^2 V = 0.
+\]
 
 % Consider an active particle whose motion is described by
 % an overdamped Langevin equation
