@@ -222,7 +222,7 @@ Schr\"odinger in 1931 was interested in the arrow of time and understanding the 
 
 The Schr\"odinger Bridge Problem (SBP) can be phrased as a minimization problem where the goal is to identify the stochastic process that minimizes the difference between a proposed state and the diffused state of the gas constrained by the measurements at $t_0$ and $t_1$. This can be written in formal notation as,
 \[
-\min_{\P_0=p_0, \P_1=p_1} \D_{\rm KL} (\P_t||X_t),
+\min_{\P_0=p_0, \P_1=p_1} \D_{\rm KL} (\P_t||Y_t),
 \]
 where $\P_t$ is the distribution of the proposed stochastic process at $t$ and $Y_t$ is diffusion motion following $\d Y_t = \sqrt{2D} \d W_t$, while $p_{0, 1}$ are the initial and final measurements. $\D_{\rm KL}(P||Q)$ is the Kullback-Leibler (KL) divergence which is a measure of how much an approximating probability distribution $Q(x)$ is different from a true probability distribution $P(x)$. In simple terms, it is a measure of distance between two distributions $P(x), Q(x)$ (there are caveats to this). This is defined as,
 \[
