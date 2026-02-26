@@ -246,12 +246,14 @@ whereas the evolution of $P$ is given by the Fokker-Planck equation,
     \partial_t p(x, t) + \grad \cdot [u(x, t) p(x, t)] = D \grad^2 p(x, t).
     \label{eq:SBPFP}
 \end{equation}
-The goal is to identify $u(x, t)$ that minimizes the `distance' between $p(x)$ and $q(x)$. Now, using Girsanov's theorem (which we do not derive here), we can show that minimizing $\D_{\rm KL}$ is the same as minimizing the quadratic cost associated with the controller. We can write then the SBP as,
+The goal is to identify $u(x, t)$ that minimizes the `distance' between $p(x)$ and $q(x)$. Now, using Girsanov's theorem (which we do not derive here), we can show that minimizing $\D_{\rm KL}$ is the same as minimizing the quadratic cost associated with the controller.\\
+
+\noindent We can now write then the SBP as,
 \begin{align}
     % c(x, u) =& \,\E\bigg[ \frac{1}{4D} \int_0^T u^2(x, t)\,\d t \bigg], \\
     V(t, x) =& \min_u\,\E\bigg[ \frac{1}{4D} \int_t^T |u(x, \tau)|^2\,\d \tau \bigg], \\
     u^*(x, t)=&\,\text{arg}\min_u\,V(t, x),\\
-    \text{s.t.}\quad\partial_t p(x, t) + \grad[u(x, t) p(x, t)] =&\,D \grad^2 p(x, t).
+    \text{s.t.}\quad \frac{\partial p(x, t)}{\partial t} + \grad \cdot [u(x, t) p(x, t)] =&\,D \grad^2 p(x, t).
 \end{align}
 The HJB equation corresponding to this problem is,
 \[
