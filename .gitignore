@@ -15,10 +15,6 @@
 build/
 out/
 
-## Output files (PDFs)
-# Most people ignore the PDF and regenerate it from source
-*.pdf
-
 ## Other common extensions
 *.nav
 *.out
@@ -31,3 +27,4 @@ out/
 *.ilg
 *.bcf
 *.run.xml
+.DS_Store
