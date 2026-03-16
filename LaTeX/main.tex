@@ -1,0 +1,378 @@
+\documentclass[12pt]{article}
+%\usepackage[sort&compress,comma,numbers,round]{natbib}
+\usepackage{graphicx}
+\usepackage{bm}
+\usepackage[hidelinks=true]{hyperref} 
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{float, bigints}
+\usepackage{amssymb,graphicx,fullpage}
+\usepackage{mathrsfs}
+\usepackage{bm}
+\usepackage[hidelinks=true]{hyperref} 
+\usepackage{mathrsfs, amsmath}
+\usepackage{amsbsy,setspace}
+\usepackage{authblk}
+
+\usepackage[most]{tcolorbox}
+\usepackage{comment}
+\tcbuselibrary{theorems}
+
+\newtcbtheorem[]{mytheo}{}%
+{colback=gray!5,colframe=gray!35!black,fonttitle=\bfseries}{th}
+
+\renewcommand\Affilfont{\itshape\small}
+%\definecolor{greenish}{rgb}{0.13,0.58,0.16}
+\definecolor{greenish}{RGB}{141,198,63}
+\definecolor{reddish}{RGB}{239,65,54}
+\definecolor{blueish}{RGB}{28,117,188}
+
+\hypersetup{
+colorlinks   = true, %Colours links instead of ugly boxes
+urlcolor     = blueish, %Colour for external hyperlinks
+linkcolor    = magenta, %Colour of internal links
+citecolor   =  greenish%Colour of citations
+}
+
+\def\d{\mathrm{d}}
+\def\e{\mathrm{e}}
+\def\hp{\hat{p}}
+\def\E{\mathbb{E}}
+\def\eh{\hat{\mathbf{e}}}
+\def\et{\tilde{\mathbf{e}}}
+\def\a{\mathbf{a}}
+\def\b{\mathbf{b}}
+\def\c{\mathbf{c}}
+\def\v{\mathbf{v}}
+\def\p{\mathbf{p}}
+\def\q{\mathbf{q}}
+\def\p{\mathbf{a}}
+\def\F{\mathbb{F}}
+\def\B{\mathbb{B}}
+\def\A{\mathbf{A}}
+\def\C{\mathbb{C}}
+\def\R{\mathbb{R}}
+\def\J{\mathcal{J}}
+\def\T{\dagger}
+\def\fh{\hat{f}}
+\def\N{\mathcal{N}}
+\def\var{\mathrm{Var}}
+\def\Z{\mathbb{Z}}
+\def\grad{\nabla}
+\def\P{\mathbb{P}}
+\def\D{\mathbb{D}}
+\def\phih{\hat{\phi}}
+\def\alpha{R}
+\def\q{Q}
+\def\ss{\mathrm{ss}}
+\def\sgp#1{\textcolor{red}{#1}}
+
+\title{Schr\"odinger Bridge Problem}
+\author{R Ananthanarayanan, S Ganga Prasath\thanks{\href{mailto:sgangaprasath@smail.iitm.ac.in}{sgangaprasath@smail.iitm.ac.in}}}
+\date{}
+
+\begin{document}
+
+\maketitle
+\begin{singlespace}
+\section{Introduction}
+This post is meant to be a primer on the Schr\"odinger Bridge Problem (SBP). Before we delve into the details, let us get the gist of the problem through a Gedankenexperiment. Consider a simple random process: a fair coin is tossed ten times in succession and after each toss the score increases by (+1) if the outcome is a Head and decreases by (-1) if the outcome is a Tail. The game begins with score (0), and only the final score is revealed after ten tosses. Suppose that the reported final score is (0), we would like to infer how the sequence of coin tosses might have unfolded. From this information, we immediately see a necessary condition that must be satisfied: the sequence must contain an equal number of Heads and Tails. However, this constraint still leaves many possible trajectories. Some sequences appear highly structured - for instance, five Heads followed by five Tails, or a perfectly alternating pattern. Others look far more typical of the outcome of a fair coin, with no particular order except that the cumulative score eventually returns to zero. It is natural to regard the latter type of sequence as more plausible. After all, we expect the underlying process to behave like an unbiased coin, except for the mild deviations required to satisfy the observed final score.
+
+One way to formalize this intuition is to imagine a mischievous assistant trying to nudge the coin so that the game ends with the desired score. They are not allowed to cheat outright - no swapping coins or forcing outcomes - but they might occasionally blow gently on the coin mid-air to bias the landing ever so slightly. The challenge is to achieve the desired final outcome while interfering with natural randomness as little as possible. This idea leads directly to the Schr\"dinger bridge problem, introduced by Erwin Schr\"odinger. In technical terms, the problem statement is to identify a stochastic process that satisfies prescribed endpoint constraints while remaining as close as possible to a given reference process. Closeness is measured using relative entropy, which quantifies how much the dynamics must be altered. Interestingly, this inference problem admits an equivalent interpretation as a stochastic optimal control problem: we seek the smallest possible ``control effort'' that steers the system between the prescribed endpoints. The resulting framework forms a bridge between stochastic processes, optimal control, and entropic optimal transport.\\
+
+Before we delve into SBP itself, we will quickly summarize a few key ideas from stochastic optimal control that are imperative for us to understand SBP.
+
+\subsection{Stochastic differential equations}
+
+Consider a Lagrangian particle described by its position $X_t$ at time $t$ as it undergoes arbitrary drift, $v(X_t, t)$ and is subject to fluctuating force in the form of delta-correlated noise, $W_t$. Its dynamics is described by a stochastic differential equation (SDE),
+\begin{equation}
+    \d X_t = v(X_t, t) \ \d t + \sigma (X_t, t)\ \d W_t.
+\end{equation}
+Consider several realizations of this dynamics with the initial condition $X_{t=0} = X_o$, we can describe the ensemble of realizations via a probability distribution, $p(x, t)$ which is the probability of finding a particle at a particular position $x$ at time $t$. The evolution of this probability density is given by the Fokker-Planck equation,
+\begin{equation}
+    \partial_t p + \grad\cdot (v p) = \grad^2 (Dp),
+    \label{eq:FPP}
+\end{equation}
+where the diffusion coefficient is $D(x, t) = \sigma^2(X_t, t)/2$.
+
+We can consider a simple setting in which we can solve the entire distribution, $p(x, t)$ analytically. If drift velocity is a constant, $v(X_t, t) = v_o$ and the amplitude of noise is a constant, $\sigma(X_t, t) = \sqrt{2D}$, then the SDE is: $\d X_t = v_o \ \d t + \sqrt{2D}\ \d W_t$. The corresponding Fokker-Planck equation is given by,
+\begin{equation}
+    \partial_t p(x, t) + v_o \cdot \grad p(x, t) = D\grad^2 p(x, t).
+    \label{eq:OUFPP}
+\end{equation}
+Initialising a particle at a position, $X_{t=0} = X_o$ corresponds to initialising the PDE with initial condition, $p(x, 0) = \delta(x-x_o)$. There are several ways of solving this PDE, the most convenient way is to rewrite the PDE in transformed coordinates as, $z = x - v_o t$ to get,
+\[
+\partial_t p(z, t) = D \partial_z^2 p(z, t).
+\]
+This, of course, is the heat-equation and can be solved in several ways -- here we show the solution using the Fourier transform. Defining forward and inverse transforms as
+\begin{align}
+    \hp(k, t) =&\ \int_{-\infty}^{\infty} p(x, t) \e^{ikz}\,\d z,\\
+    p(z, t) =&\ \frac{1}{2\pi} \int_{-\infty}^{\infty} \hp(k, t) \e^{-ikz}\,\d k,
+\end{align}
+the heat equation reduces to an amplitude equation,
+\[
+\frac{\d \hp(k, t)}{\d t} = -D k^2 \hp(k, t),
+\]
+for the $k$-th mode. This can be solved easily to get, $\hp(k, t) = \hp_o(k) \exp(-Dk^2t)$. The initial condition $p(z, 0) = \delta(z-x_o)$ gives $\hp_o(k) = \exp(ikx_o)$. The final solution is formally,
+\[
+p(x, t) =  \frac{1}{2\pi} \int_{-\infty}^{\infty} \e^{-Dk^2 t - ik(z-x_o)} \ \d k.
+\]
+A useful integral identity is,
+\[
+\int_\infty^\infty \e^{-a z^2 \pm b z}\,\d z = \sqrt{\frac{\pi}{a}} \e^{(b^2/4a)}.
+\]
+Using this, we can get the classical result,
+\begin{equation}
+p(z, t) = \sqrt{\frac{\pi}{4Dt}}\, \e^{-(z - x_o)^2/4 D t}.
+\label{eq:heatSoln}
+\end{equation}
+In the original frame of reference, the solution reads,
+\[
+p(x, t) = \sqrt{\frac{\pi}{4Dt}}\, \e^{-(x - x_o - v_o t)^2/4 D t}.
+\]
+It is clear that the mean of the distribution is, $\E[X] = (x_o+v_o t)$, which simply means that the distribution's mean gets advected with a constant speed, $v_o$. The variance can be seen to vary as $\var(X) = 4Dt$, indicating that the distribution grows larger with time at a rate $w \sim t^{1/2}$.
+
+\begin{tcolorbox}[colback=gray!20!white,colframe=white,arc=8pt,outer arc=8pt]
+    \textbf{\textsf{Properties of Gaussian/Normal distribution}}\\[5pt]
+    Gaussian function/Normal distribution has several nice properties making them amenable to a variety of analytical calculations. The function is defined as
+    \[
+    g(x)={\frac{1}{{\sqrt {2\pi \sigma^2}}}}\exp \left[-{\frac {1}{2}}{\frac {(x-\mu )^{2}}{\sigma ^{2}}}\right].
+    \]
+    The mean of the function/distribution, $\E[X] = \mu$ and the variance, $\var [X] = \sigma^2$. Further, the normal distribution, often denoted by $\N(\mu, \sigma^2)$, has the following useful properties:\\
+    The moment generating function of a distribution is a powerful function with useful properties. It is defined as, $G(t) = \E[\e^{tX}]$. This can be expanded as,
+    \[
+    G(t) = \sum_{k=-\infty}^{\infty} \E[X^k] \frac{t^k}{k!}.
+    \]
+    Using this definition, $G(t)$ of $\N(0, 1)$ is given by,
+    \[
+    G(t) = \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{\infty} \e^{tx} \e^{-x^2/2}\,\d x = \e^{t^2/2} \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{\infty} \e^{-(s-t)^2/2}\,\d x = \e^{t^2/2}.
+    \]
+    For a $\N(\mu, \sigma^2)$, the moment generating function is $G(t) = \e^{\mu t + \sigma^2t^2/2}$. The $n$-th moment of the distribution is $\E[X^n] = \d^n G(t)/\d t^n |_{t=0}$ and so we can easily see that $\E[X] = \mu$ and $\var[X] = \E[X^2] - \E[X]^2 = \sigma^2$.\\
+
+    For a normal distribution, all moments are functions of $\mu$ and $\sigma^2$. Since the normal distribution is a symmetric distribution about the mean, $\E[(X-\mu)^{2n+1}] = 0$ for $n \in \Z$. For even moments, we can use the definition of the moment generating function, $G(t)$ to find that, $\E[(X-\mu)^{2n}] = \sigma^{2n} (2n)!/(2^n n!)$.
+\end{tcolorbox}
+
+\section{Stochastic optimal control}
+
+Now that we know the connection between SDE and their PDE representation, we move towards introducing stochastic optimal control. The goal of the optimal control framework is to drive the dynamics of a system along a trajectory that minimizes a cost via an added controller. Let us write the dynamics of a particle the presence of stochasticity and a general forcing, $f(X_t, u, t)$ as
+\[
+\d X_t = f(X_t, u, t) \ \d t + \sqrt{2D}\ \d W_t.
+\]
+Here the drive/control variable is $u(t)$ and it acts on the particle in order to minimize a cost,
+\[
+c(X, u) = \E \bigg[\int_0^T r(X, u, t)\,\d t \bigg].
+\]
+Here $r(X, u, t)$ is the cost `density' along the trajectory and as we can see the dynamics of the particle we are interested in controlling is bounded in $t \in [0, T]$ and the cost function, $c(X, u)$ is minimized in the average sense. It is useful to define the cost-to-go function $V(t, x)$, which is the optimized cost incurred from time $t$ to time $T$. The cost-to-go function, also known as the value function, can be written as,
+\[
+V(t, x) = \min_{u_{t:T}} \E \bigg[\int_t^T r(X_\tau, u, \tau)\,\d \tau \bigg].
+\]
+This equation can be expanded over a small time interval $[t, t+\Delta t]$ as,
+\[
+V(t, x) = \min_{u} \mathbb{E} \left[ \int_t^{t+\Delta t} r(X_\tau, u, \tau) \d \tau + V(t+\Delta t, X_{t+\Delta t}) \right]
+\]
+For a small $\Delta t$, the integral is approximately $r(X, u, t)\Delta t$. To handle the stochastic term $X_{t+\Delta t}$, we apply Ito's Lemma to expand $V(t+\Delta t, X_{t+\Delta t})$ around $(t, X)$,
+\[
+V(t+\Delta t, X_{t+\Delta t}) \approx V(t, x) + \frac{\partial V}{\partial t}\Delta t + \nabla V \cdot \d X_t + D \nabla^2 V \Delta t.
+\]
+Substituting $\d X_t = f(X_t, u, t)\,\d t + \sqrt{2D}\d W_t$ for the dynamics and noting that $\E[\d W_t] = 0$, we get,
+\[
+\mathbb{E}[V(t+\Delta t, X_{t+\Delta t})] \approx V(t, x) + \left( \frac{\partial V}{\partial t} + f(x, u, t) \, \grad V + D \grad^2 V \right) \Delta t.
+\]
+Substituting this back into the optimality expression,
+\[
+V(t, x) = \min_{u} \left[ r(x, u, t)\Delta t + V(t, x) + \left( \frac{\partial V}{\partial t} + f(x, u, t) \, \grad V + D \grad^2 V \right) \Delta t \right].
+\]
+Subtracting $V(t, x)$ from both sides, dividing by $\Delta t$, and taking the limit $\Delta t \to 0$, we arrive at the Hamilton-Jacobi-Bellman (HJB) equation,
+\begin{equation}
+-\frac{\partial V}{\partial t} = \min_{u} \left[ r(x, u, t) + f(x, u, t) \grad V \right] + D \grad^2 V.
+\label{eq:HJB}
+\end{equation}
+The HJB equation is solved backward in time with the terminal condition $V(T, x) = 0$. The backward time aspect comes from the fact that the particle dynamics at $t$ is affected by the cost function from $t$ to $T$. Note that the terms in the HJB equation came from the minimization operation above because $V(t,x)$ is not an explicit function of $u$ as it is evaluated after identifying the optimal $u$.
+
+\begin{tcolorbox}[breakable, enforce breakable,colback=gray!20!white,colframe=white,arc=8pt,outer arc=8pt]
+    \textbf{\textsf{Particle in a potential with quadratic cost}}\\[5pt]
+    Consider the case when the particle is under the influence of a potential with linear control. In this case, $f(x, u, t) = -\grad \phi + u$, with $\phi$ being the potential. Further, lets assume $r(x, u, t) = \dfrac{\q x^2}{2} + \dfrac{\alpha u^2}{2}$. The HJB equation in Eq.~\ref{eq:HJB} reduces to,
+    \[
+    -\frac{\partial V}{\partial t} = \min_{u} \left[\frac{\q x^2}{2}+ \frac{\alpha u^2}{2} + (u-\nabla \phi) \cdot (\grad V) \right] + D \grad^2 V.
+    \]
+    The optimal controller $u^*$ minimizes the terms in the bracket and we can evaluate this exactly to get,
+    \[
+    u^* = - \frac{1}{\alpha} \grad V.
+    \]
+    % Substitute this back into Eq.~\ref{eq:HJB}, we get
+    % \[
+    % -\frac{\partial V}{\partial t} = \frac{\q x^2}{2}-\frac{|\grad V|^2}{2 \alpha} - \frac{1}{\alpha}(\nabla \phi) \cdot (\grad V) + D \grad^2 V.
+    % \]
+     The evolution of the particle is coupled to the value function, $V(t, x)$ via an effective velocity. The probability distribution of the particle evolves as,
+     \[
+     \partial_tp(x,t) = -\grad.[\text{v}_{\text{eff}}.p(x,t)]+D\grad^2p(x,t)
+     \]
+    where $\text{v}_{\text{eff}} = -\grad\phi + u^*(x,t) = -\grad\phi-\dfrac{1}{\alpha}\grad V(x,t)$. Consider now a quadratic potential, $\phi = kx^2/2$, then HJB equation reduces to,
+    \[
+    \partial_t V = -\frac{\q x^2}{2} + \frac{|\grad V|^2}{2 \alpha} + \frac{kx}{\alpha} (\grad V) - D \grad^2 V.
+    \]
+    Assuming the spatial dependence of the value function to be quadratic, we write, $V(t, x) = h(t) x^2 + g(t)$. Substituting this ansatz into the HJB equation reduces the PDE form to 2 coupled ODEs, $\dot{h}(t) = -\q + 2kh(t) + h^2(t)/\alpha$ and $\dot{g}(t) = - Dh(t)$. Assuming fast relaxation of $h(t)$, the steady state of $h(t)$ is $h_\ss = -k\alpha + \alpha\sqrt{k^2 + \q/\alpha}$ and this gives $g(t) = -Dh_\ss t$. The optimal controller is a simple linear feedback, $u^* = (k - \sqrt{k^2 + \q/\alpha}) x$. In the absence of diffusion, $D = 0$ the solution is the famous Linear Quadratic Regulator (LQR). From this we can see that effective velocity of the particle is $\text{v}_{\text{eff}} = -x\sqrt{k^2 + \q/\alpha}$ and the SDE form is simply $\d X_t = -X_t\sqrt{k^2 + \q/\alpha} \ \d t + \sqrt{2D}\ \d W_t$. This stochastic process is the famous Ornstein-Uhlenbeck process and the evolution of $p(x, t)$ for this process can be solved using Fourier transform and we get,
+    \[
+    P(x, t \mid x_0, 0) = \sqrt{\frac{\theta}{2\pi D \left(1 - e^{-2\theta t}\right)}} \exp \left[ -\frac{\theta \left(x - x_0 e^{-\theta t}\right)^2}{2D \left(1 - e^{-2\theta t}\right)} \right],
+    \]
+    where $\theta = \sqrt{k^2 + {q}/{\alpha}}$.
+    % In the infinite time limit, $T \rightarrow \infty$, called as infinite horizon problem, we can assume the value function to be not an explicit function of $t$. The above equation then reduces to an ODE of the Riccati form,
+    % \[
+    % 2 \alpha D V''(x)  -V'(x)^2 + 2kx V'(x) +\alpha qx^2= 0.
+    % \]
+    % Let us substitute $w(x) = V'(x)$ and we get, $2\alpha Dw'(x) - w^2(x) + 2kx w(x) + \alpha qx^2=0$. Since the cost function and the potential are quadratic in the state variable $x$, it is a valid ansatz that $V(x)$ is also quadratic in the state variable. Substituting, $V(x) = Px^2/2$, we can solve for $P$ to get, $P^2 - 2kP - \alpha q=0$ and $2\alpha DP=0$. This is a contradiction as both the conditions cannot be satisfied at the same time. This can be traced back to some faulty assumptions we made.\\
+    % Since the dynamics is stochastic, the value function cannot reach a true steady state. There will always be some fluctuations that need to be corrected for. Rather we can only assume it reaches a stationary state in the long time limit. That is
+    % we can modify the original ansatz for the form of value function to
+    % \[
+    % V(x,t) = \tilde{V}(x) + g(t)
+    % \]
+    % such that
+    % \[
+    % \partial_tV = \frac{dg}{dt}
+    % \]
+    % With these changes, the HJB equation becomes
+    % \[
+    % \lambda = x^2(\frac{q}{2} -\frac{P^2}{2\alpha} - kP)+DP
+    % \]
+    % where $\lambda = \dfrac{dg}{dt}$.\\
+    % This equation has valid solution for all x when
+    % \[
+    % P = -\alpha k+ \sqrt{\alpha^2k^2 +\alpha q}
+    % \]
+    % and $\lambda = DP$\\
+    % Now we can arrive at the cost function as
+    % \[
+    % V(x,t) = \frac{Px^2}{2}-\lambda t+ constant
+    % \]
+    % This in turn results in 
+    % \[
+    % u^* = -\dfrac{1}{\alpha}Px = -\bigg(-k +\sqrt{k^2+\dfrac{q}{\alpha}} \bigg)x
+    % \]
+\end{tcolorbox}
+
+\section{Schr\"odinger Bridge Problem}
+In 1931, Schr\"odinger was interested in the arrow of time and to understand the connections between classical and quantum diffusion. We will not be delving into the actual physics part of the problem but he proposed the following problem: consider measuring the state of a gas at $t_0$ and making another measurement at $t_1$, what is the most likely path the gas took to reach the state at $t_1$ from $t_0$. This he proposed to solve assuming that he knows gases undergo diffusion.
+
+The Schr\"odinger Bridge Problem (SBP) can be phrased as a minimization problem where the goal is to identify the stochastic process that minimizes the difference between the proposed process and the diffusion of the gas constrained by measurements at $t_0$ and $t_1$. This can be written in formal notation as,
+\[
+\min_{\P_0=p_0, \P_1=p_1} \D_{\rm KL} (\P_t||Y_t),
+\]
+where $\P_t$ is the distribution of the proposed stochastic process at $t$ and $Y_t$ is the Brownian diffusion motion following $\d Y_t = \sqrt{2D} \d W_t$, while $p_{0, 1}$ are the initial and final measurements. $\D_{\rm KL}(P||Q)$ is the Kullback-Leibler (KL) divergence which is a measure of how much an approximating probability distribution $Q(x)$ is different from a true probability distribution $P(x)$. In simple terms, it is a measure of the distance between two distributions $P(x), Q(x)$ (there are caveats to this). This is defined as,
+\[
+\D_{\text{KL}}(P\parallel Q)= \int P(x)\,\log {\frac {P(x)}{Q(x)}}\,\d x.
+\]
+In the Lagrangian sense, the SBP becomes a known diffusion process $Q$ whose stochastic dynamics is,
+\[
+\d Y_t = \sqrt{2D}\,\d W_t,
+\]
+and an unknown process,
+\[
+\d X_t = u(X_t, t)\,\d t + \sqrt{2D}\,\d W_t,
+\]
+where $u(x, t)$ is the unknown controller. The evolution of $Q$ is simply the diffusion equation,
+\begin{equation}
+    \partial_t q = D \grad^2 q,
+    \label{eq:DiffFP}
+\end{equation}
+whereas the evolution of $P$ is given by the Fokker-Planck equation,
+\begin{equation}
+    \partial_t p + \grad \cdot (u p) = D \grad^2 p.
+    \label{eq:SBPFP}
+\end{equation}
+The goal is to identify $u(x, t)$ that minimizes the `distance' between $p(x)$ and $q(x)$. Now, using Girsanov's theorem (which we do not derive here), we can show that minimizing $\D_{\rm KL}$ is the same as minimizing the quadratic cost associated with the controller. We can write then the SBP as,
+\begin{align}
+    % c(x, u) =& \,\E\bigg[ \frac{1}{4D} \int_0^T u^2(x, t)\,\d t \bigg], \\
+    V(t, x) =& \min_u\,\E\bigg[ \frac{1}{4D} \int_t^T |u(x, \tau)|^2\,\d \tau \bigg], \\
+    u^*(x, t)=&\,\text{arg}\min_u\,V(t, x),\\
+    \text{s.t.}\quad\partial_t p(x, t) + \grad \cdot [u(x, t) p(x, t)] =&\,D \grad^2 p(x, t).
+\end{align}
+The HJB equation corresponding to this problem is,
+\[
+    -\frac{\partial V}{\partial t} = \min_{u} \left[ \frac{|u|^2}{4D} + u \cdot (\grad V) \right] + D \grad^2 V.
+\]
+We can immediately see that the optimal control, $u^*(x, t)$ satisfies,
+\begin{equation}
+    u^* = -2D \grad V(t, x),
+\end{equation}
+and the evolution of the value function by substituting the optimal control $u^*$ is,
+\begin{equation}
+    \frac{\partial V}{\partial t} - D |\grad V|^2 + D \grad^2 V = 0. \label{eq:VFin}
+\end{equation}
+Equation~\ref{eq:SBPFP} becomes,
+\begin{equation}
+\partial_t p - 2D \grad \cdot [ (\grad V) p] = D \grad^2 p. \label{eq:FPFin}
+\end{equation}
+Using Cole-Hopf transformation $V(t, x) = - \log \phi(x, t)$, we can rewrite Eq.~\ref{eq:VFin} as,
+\[
+\partial_t \phi = - D \nabla^2 \phi,
+\]
+and $u^* = 2 D \grad \log \phi$.
+We have now simplified the Eq.~\ref{eq:VFin} for value function $V(t, x)$ to a heat equation in $\phi(x, t)$ which we know how to solve. Note that the diffusion coefficient is negative here but since this equation has to be solved backwards in time, there is no divergence issue. What remains to be done is to simplify the evolution of the density, $p(x, t)$ in Eq.~\ref{eq:FPFin}. Here we substitute the Schr\"odinger factorization or Born rule to write $p(x, t) = \phi \phih$ in Eq.~\ref{eq:FPFin} to get,
+\[
+\partial_t \phih = D\nabla^2\phih,\ \partial_t \phi = D \nabla^2 \phi.
+\]
+The problem has boiled down to solving two equations -- a forward and a backward heat equation subject to the constraints,
+\[p(x,0) = p_{0}(x),\ p(x, 1) = p_{1}(x).\]
+Since $p(x,t) = \phi(x,t)\phih(x,t)$, the constraints become
+$\phi(x,0)\phih(x,0) = p_{0}(x), \phi(x, 1)\phih(x,1) = p_{1}(x)$. Substituting the solution from Eq.~\ref{eq:heatSoln} for the forward and backward heat equation, we get the following:
+\begin{align}
+p_0(x) =&\ \phi(x,0)\int K(x,y; 1)\phih(y,1)\,\d y,\label{eq:SinkForw} \\
+p_1(y) =&\ \phih(y,1)\int K(x,y; 1)\phi(x,0)\,\d x.\label{eq:SinkBack}
+\end{align}
+where the heat equation kernel is defined as, 
+\[
+K(x,y; t) = \dfrac{1}{(4\pi Dt)^{1/2}}\exp\bigg( 
+\frac{-|x-y|^2}{4Dt}
+\bigg).
+\]
+What is left right is to identify the initial conditions for the forward and backward heat equation from two constrained equations, Eqs.~\ref{eq:SinkForw} and \ref{eq:SinkBack}. Once we identify the initial conditions, $\phi(x, 0)$ and $\phih(x, 1)$, we can propagate in time and find the solution $\phi(x, t)$ and $\phih(x,t)$. Using this we can compute $p(x, t) =\phi\phih$, the cost-to-go $V(t,x)=-\log\phi(x,t)$, and ultimately the optimal control function $u^* = -2D\grad V$.
+
+\begin{tcolorbox}[breakable, enforce breakable, colback=gray!20!white, colframe=white,arc=8pt,outer arc=8pt]
+
+\textbf{\textsf{Schrodinger Bridge between two Gaussians}}\\[5pt]
+Let us now look at an example of SBP between two Gaussian distributions measured at $t=0, 1$. The two marginal distributions at time $t=0$ and $t=1$ are,
+\[
+p_0 =\mathcal{N}(\mu_0, \sigma^2_0) \quad \text{and}\quad p_1=\mathcal{N}(\mu_1, \sigma^2_1).
+\]
+Now we make use of the fact that the kernel of the reference process is gaussian, and the marginals are also gaussian. In this case the heat equation preserves the Gaussianity at all times. With this in mind we can assume the solutions of the forward and backward heat equations to be of the form,
+\[
+\phi(x,t) = \exp\big(a(t)x^2 + b(t)x + c(t)\big),
+\]
+\[
+\phih(x,t) = \exp\big(\hat{a}(t)x^2 + \hat{b}(t)x+\hat{c}(t)\big).
+\]
+This leads to the solution, $p(x,t)= \phi\phih =\exp\big(A(t)x^2 +B(t)x+C(t)\big)$. Solving for the forward and backward heat equations is straightforward, but we have to be careful while applying the boundary conditions as the boundary conditions are joint density of the forward and backward functions. Solving for the resulting system of equations gives the solution for the parameters $a(t), \hat{a}(t),A(t),$etc. The cost-to-go function $V(t, x)$ turns out to be, $
+V(t, x) = -\log\phi(x, t) = - (ax^2+bx+c)$, which results in a quadratic form for the cost-to-go function and the optimal control function turns out to be, $u^* = 2D\grad\log \phi = 2D(2ax+b)$, which is linear in $x$.\\
+
+After substituting the Gaussian ansatz into the backward and forward heat equations, we match the coefficients of $x^2, x^1,$ and $x^0$. For the quadratic parameters $a(t)$ and $\hat{a}(t)$, we obtain the following Riccati ODEs: $\dot{a}(t) = -4Da(t)^2, \dot{\hat{a}}(t) = 4D\hat{a}(t)^2$. Their solutions are,
+\begin{equation*}
+    a(t) =\frac{a(1)}{1 - 4D(1-t)a(1)}, \quad
+    \hat{a}(t) =\,\frac{\hat{a}(0)}{1 - 4Dt\hat{a}(0)}.
+\end{equation*}
+To satisfy the marginals $p_0 = \mathcal{N}(\mu_0, \sigma^2_0)$ and $p_1 = \mathcal{N}(\mu_1, \sigma^2_1)$, we define the bridge constant $S = \sqrt{\sigma_0^2 \sigma_1^2 + D^2}$. Solving the boundary coupling $a(0) + \hat{a}(0) = -{\sigma_0^2}/{2}$ and $a(1) + \hat{a}(1) = -{\sigma_1^2}/{2}$ yields,
+\begin{equation}
+    a(1) = \frac{\sigma_0 - \sigma_1 - S}{2D\sigma_1}, \quad \hat{a}(0) = \frac{\sigma_1 - \sigma_0 - S}{2D\sigma_0}
+\end{equation}
+The density $p(x, t)$ satisfies, $A(t) = a(t) + \hat{a}(t) = -1/(2\sigma_t^2)$, which leads to the variance evolution formula,
+\begin{equation}
+    \sigma_t^2 = (1-t)^2 \sigma_0^2 + t^2 \sigma_1^2 + 2t(1-t)\sqrt{\sigma_0^2 \sigma_1^2 + D^2}.
+\end{equation}
+The linear coefficients $b(t)$ and $\hat{b}(t)$ satisfy $\dot{b} = -4Dab$ and $\dot{\hat{b}} = 4D\hat{a}\hat{b}$, with boundary values,
+\begin{equation}
+    b(1) = \frac{D\mu_1 + \mu_1 S - \mu_0 \sigma_1^2}{2 D \sigma_1^2 S}, \quad \hat{b}(0) = \frac{D\mu_0 + \mu_0 S - \mu_1 \sigma_0^2}{2 D \sigma_0^2 S}
+\end{equation}
+The resulting mean $m_t = -B(t) / (2A(t))$ where $B(t) = b(t) + \hat{b}(t)$ simplifies to the linear interpolation $m_t = (1-t)\mu_0 + t\mu_1$. The normalization constant $C(t) = c(t) + \hat{c}(t)$ is given by,
+\begin{equation}
+    C(t) = -\frac{m_t^2}{2\sigma_t^2} - \log(\sqrt{2\pi \sigma_t^2}).
+\end{equation}
+Finally, the optimal control $u^*(x, t) = 2D(2a(t)x + b(t))$ is expressed in terms of the physical moments as,
+\begin{equation}
+    u^*(x, t) = (\mu_1 - \mu_0) + \frac{\dot{\sigma}_t}{\sigma_t}(x - m_t).
+\end{equation}
+You can simulate now a stochastic process with the prescribed $u^*(x, t)$ and the solution will traverse from $\N(\mu_0, \sigma^2_0)$ at $t=0$ to $\N(\mu_1, \sigma^2_1)$ at $t=1$ -- this is precisely the animation shown at the beginning of this post.
+\end{tcolorbox}
+
+\end{singlespace}
+\end{document}
+
